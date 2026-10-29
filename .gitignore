@@ -7,3 +7,5 @@ data/real/*
 data/fake/*
 !data/real/.gitkeep
 !data/fake/.gitkeep
+dataset/manifest.csv
+dataset/split_manifest.csv
