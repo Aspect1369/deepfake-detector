@@ -1,0 +1,20 @@
+{
+  "name": "pulsecheck-video-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local video upload demo with a SQLite-backed Node.js server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check app.js",
+    "test:detector": "py -3 -m unittest discover -s tests -v"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  }
+}

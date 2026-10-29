@@ -1,0 +1,9 @@
+node_modules/
+server-data/
+.env
+__pycache__/
+*.py[cod]
+data/real/*
+data/fake/*
+!data/real/.gitkeep
+!data/fake/.gitkeep

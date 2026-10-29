@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#f4f6fb">
+	<title>PulseCheck | Video demo</title>
+	<link rel="stylesheet" href="styles.css">
+	<script src="app.js" defer></script>
+</head>
+<body>
+	<header class="topbar">
+		<a class="brand" href="#" aria-label="PulseCheck home">
+			<span class="brand-icon" aria-hidden="true">P</span>
+			<span>PulseCheck</span>
+		</a>
+		<span class="demo-label"><span class="status-dot" aria-hidden="true"></span> Student project demo</span>
+	</header>
+
+	<main class="page">
+		<section class="intro" aria-labelledby="page-title">
+			<p class="eyebrow">VIDEO AUTHENTICITY CHECK</p>
+			<h1 id="page-title">A closer look at your video.</h1>
+			<p class="intro-copy">Estimate a pulse signal from a face in a short, well-lit video.</p>
+		</section>
+
+		<section class="workspace" aria-label="Video analysis">
+			<div class="panel upload-panel">
+				<div class="panel-heading">
+					<div>
+						<h2>Upload a video</h2>
+						<p>Analyzed locally by the experimental rPPG pulse estimator.</p>
+					</div>
+					<span class="step-number" aria-hidden="true">01</span>
+				</div>
+
+				<label class="drop-zone" id="drop-zone" for="video-input">
+					<input id="video-input" class="visually-hidden" type="file" accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm">
+					<span class="upload-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none">
+							<path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4.5 14.5v4A1.5 1.5 0 0 0 6 20h12a1.5 1.5 0 0 0 1.5-1.5v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<strong>Drop your video here</strong>
+					<span class="drop-hint">or <span class="browse-link">browse files</span></span>
+					<span class="file-rules">MP4, MOV or WebM &middot; up to 50 MB</span>
+				</label>
+				<p class="message" id="file-message" role="status" aria-live="polite"></p>
+
+				<div class="preview-wrap" id="preview-wrap" hidden>
+					<div class="preview-heading">
+						<span class="preview-label">VIDEO PREVIEW</span>
+						<button class="text-button" id="remove-video" type="button">Remove</button>
+					</div>
+					<video id="video-preview" controls playsinline preload="metadata"></video>
+					<p class="preview-error" id="preview-error" role="status" hidden>This browser cannot preview this video's format or codec. Try a compatible MP4 or WebM.</p>
+					<p class="file-name" id="file-name"></p>
+				</div>
+
+				<button class="analyze-button" id="analyze-button" type="button" disabled>
+					<span class="button-spinner" aria-hidden="true"></span>
+					<span class="button-label">Analyze video</span>
+					<svg class="button-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+						<path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+				<p class="privacy-note">Temporary upload is deleted after analysis. Pulse signal is not proof of authenticity.</p>
+			</div>
+
+			<section class="panel result-panel" id="result-card" aria-labelledby="result-title" aria-live="polite" hidden>
+				<div class="panel-heading">
+					<div>
+						<h2 id="result-title">Pulse analysis</h2>
+						<p id="result-summary">The analysis response will appear here.</p>
+					</div>
+					<span class="step-number" aria-hidden="true">02</span>
+				</div>
+
+				<div class="demo-warning">
+					<span aria-hidden="true">i</span>
+					<span id="result-message">A pulse estimate is a signal measurement, not a real/fake determination.</span>
+				</div>
+
+				<div class="verdict">
+					<div>
+						<p class="metric-label">PULSE RESULT</p>
+						<p class="verdict-value" id="verdict">WAITING</p>
+					</div>
+					<div class="confidence">
+						<p class="metric-label">SIGNAL QUALITY (NOT FAKE CONFIDENCE)</p>
+						<p class="confidence-value" id="confidence">Not available</p>
+					</div>
+				</div>
+
+				<div class="bpm-card">
+					<div>
+						<p class="metric-label">ESTIMATED PULSE</p>
+						<p class="bpm-value"><span id="bpm">Not available</span></p>
+					</div>
+					<span class="pulse-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none">
+							<path d="M3 12h4l2.2-6 4.1 12 2.2-6H21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+				</div>
+
+				<div class="graph-heading">
+					<p class="metric-label">PULSE SIGNAL</p>
+					<span>Filtered rPPG signal</span>
+				</div>
+				<img class="pulse-graph" id="pulse-graph" alt="Pulse signal graph" hidden>
+				<p class="result-footnote" id="result-footnote">Pulse estimates are experimental and cannot determine whether a video is real or manipulated.</p>
+			</section>
+		</section>
+
+		<details class="upload-explainer">
+			<summary>How does the pulse estimate work?</summary>
+			<div class="explainer-content">
+				<p>The preview stays in your browser. When you select Analyze, JavaScript sends the video in <code>FormData</code> to the local Node server, which calls the Python detector:</p>
+				<pre><code>async function sendVideo(selectedVideo) {
+  const formData = new FormData();
+  formData.append("video", selectedVideo);
+
+  const response = await fetch("/api/analyze", {
+    method: "POST",
+    body: formData
+  });
+  if (!response.ok) throw new Error("Upload failed");
+  return response.json();
+}</code></pre>
+				<p><code>FormData</code> packages the video under the field name <code>video</code>. Python tracks a face with OpenCV, averages green-channel values in forehead and cheek regions, filters the traces from 0.7 to 3.3 Hz, and estimates a pulse peak. SQLite stores the measured BPM and signal-quality details; the server deletes the temporary video. The quality score is not a probability that the video is real or fake.</p>
+			</div>
+		</details>
+		<p class="page-footnote">PulseCheck is a learning demo, not a forensic tool.</p>
+	</main>
+</body>
+</html>
