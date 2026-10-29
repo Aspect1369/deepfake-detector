@@ -1,0 +1,4 @@
+video_path,label,group_id,source,method
+real/person01_clip01.mp4,real,person01_source01,consented_recording,camera_recorded
+deepfake/person01_swap01.mp4,deepfake,person01_source01,consented_recording,document_tool_and_version
+ai_generated/generator01_clip01.mp4,ai_generated,generator01_batch01,generated,document_tool_and_version
